@@ -1,0 +1,9 @@
+package Utlis;
+
+public enum DEFENCE_RESULT {
+    TARGET_KILLED,
+    ATTACKER_KILLED,
+    TARGER_ESCAPED,
+    ATTACKER_ESCAPED,
+    TARGET_BLOCKS,
+}
