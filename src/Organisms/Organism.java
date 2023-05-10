@@ -1,6 +1,7 @@
 package Organisms;
 
 import Utlis.DEFENCE_RESULT;
+import Utlis.ORGANISM_TYPE;
 
 import java.awt.geom.Point2D;
 
@@ -12,6 +13,8 @@ public abstract class Organism
     protected Point2D position;
     protected boolean alive;
 
+    protected ORGANISM_TYPE type;
+
     protected Organism(Point2D _position, int _strength, int _initiative) {
         position = _position;
         strength = _strength;
@@ -19,6 +22,8 @@ public abstract class Organism
 
         alive = true;
         age = 0;
+
+        type = ORGANISM_TYPE.UNKNOWN;
     }
 
 
@@ -78,4 +83,8 @@ public abstract class Organism
         return "No Description";
     }
 
+
+    public ORGANISM_TYPE GetType() {
+        return type;
+    }
 };

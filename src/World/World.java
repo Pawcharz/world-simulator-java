@@ -25,11 +25,10 @@ public class World
     private Human player;
 
     private World() {
+        dimentions = new Point2D.Double(0, 0);
+
         organisms = new ArrayList<Organism>();
         player = null;
-
-        controller = null;
-        displayer = null;
     }
 
     private void SetSize(Point2D dimentions) {
@@ -59,7 +58,20 @@ public class World
         }
     }
 
-    // private void CreateHuman();
+    private void CreatePlayer() {
+        Point2D position = RandomPoint2D(new Point2D.Double(0, 0), dimentions);
+
+        // FIX - will crash for more entities on the map
+        Organism existing = GetOrganismAtPosition(position);
+        while (existing != null)
+        {
+            position = RandomPoint2D(new Point2D.Double(0, 0), dimentions);
+            existing = GetOrganismAtPosition(position);
+        }
+
+        player = new Human(position);
+        organisms.add(player);
+    }
 
 
     private void SortOrganisms() {
@@ -105,12 +117,44 @@ public class World
         return worldInstance;
     }
 
-    public void Initialize(Point2D dimentions) {
+    public void Initialize(Point2D _dimentions) {
 
+        dimentions = _dimentions;
+
+        int WOLFS_COUNT = 4;
+        int SHEEPS_COUNT = 5;
+        int FOXES_COUNT = 3;
+        int TURTLES_COUNT = 3;
+        int ANTELOPES_COUNT = 3;
+
+
+        int GRASS_COUNT = 3;
+        int SOW_THISTLE_COUNT = 1;
+        int GUARANA_COUNT = 2;
+        int BELLADONNA_COUNT = 3;
+        int SOSNOWSKYS_HOGWEED_COUNT = 2;
+
+        CreatePlayer();
+
+        CreateSpecies(WOLFS_COUNT, ORGANISM_TYPE.WOLF);
+//        CreateSpecies(SHEEPS_COUNT, ORGANISM_TYPE.SHEEP);
+//        CreateSpecies(FOXES_COUNT, ORGANISM_TYPE.FOX);
+//        CreateSpecies(TURTLES_COUNT, ORGANISM_TYPE.TURTLE);
+//        CreateSpecies(ANTELOPES_COUNT, ORGANISM_TYPE.ANTILOPE);
+//
+//        CreateSpecies(GRASS_COUNT, ORGANISM_TYPE.GRASS);
+//        CreateSpecies(SOW_THISTLE_COUNT, ORGANISM_TYPE.SOW_THISTLE);
+//        CreateSpecies(GUARANA_COUNT, ORGANISM_TYPE.GUARANA);
+//        CreateSpecies(BELLADONNA_COUNT, ORGANISM_TYPE.BELLADONNA);
+//        CreateSpecies(SOSNOWSKYS_HOGWEED_COUNT, ORGANISM_TYPE.SOSNOWSKYS_HOGWEED);
+
+        controller = new Controller();
+        displayer = new Displayer();
     }
 
     public void Simulate() {
-        System.out.println("Simulating world!");
+        MakeTurn();
+        displayer.UpdateInterface();
     }
 
 
@@ -161,7 +205,7 @@ public class World
         {
             Organism current = organisms.get(i);
 
-            if(current.GetPosition() == position) {
+            if(current.GetPosition().equals(position)) {
                 return current;
             }
         }
