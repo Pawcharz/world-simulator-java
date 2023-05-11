@@ -31,10 +31,6 @@ public class World
         player = null;
     }
 
-    private void SetSize(Point2D dimentions) {
-
-    }
-
     private void CreateOrganism(ORGANISM_TYPE organismType) {
 
         Point2D position = RandomPoint2D(new Point2D.Double(0, 0), dimentions);
@@ -75,16 +71,64 @@ public class World
 
 
     private void SortOrganisms() {
+        ArrayList<Organism> sorted = new ArrayList<Organism>();
 
+        for (int i = 0; i < organisms.size(); i++) {
+            Organism best = getQuickestOrganism(organisms, sorted);
+
+            sorted.add(best);
+        }
+
+        organisms = sorted;
+    }
+
+    private Organism getQuickestOrganism(ArrayList<Organism> all, ArrayList<Organism> excluded) {
+        int length = all.size();
+
+        Organism best = null;
+
+        for (int i = 0; i < length; i++)
+        {
+            Organism newOrganism = all.get(i);
+
+            // CHECK - not sure about filter
+            boolean includes = excluded.stream().filter(organism -> {
+                return organism == newOrganism;
+            }).count() != 0;
+
+            if (!includes) {
+                if (best == null) {
+                    best = newOrganism;
+                }
+                else {
+                    int currentInitiative = best.GetInitiative();
+                    int newInitiative = newOrganism.GetInitiative();
+
+                    if (newInitiative > currentInitiative) {
+                        best = newOrganism;
+                    }
+                    else if (newInitiative == currentInitiative && newOrganism.GetAge() > best.GetAge()) {
+
+                        best = newOrganism;
+                    }
+                }
+            }
+        }
+
+        return best;
     }
 
     private void MakeTurn() {
+        SortOrganisms();
+
         for (int i = organisms.size() - 1; i >= 0; i--)
         {
             Organism current = organisms.get(i);
 
             current.Action();
         }
+
+        CleanDeadOrganisms();
     }
 
     private void CleanDeadOrganisms() {
@@ -134,9 +178,12 @@ public class World
         int BELLADONNA_COUNT = 3;
         int SOSNOWSKYS_HOGWEED_COUNT = 2;
 
-        CreatePlayer();
+//        CreatePlayer();
 
-        CreateSpecies(WOLFS_COUNT, ORGANISM_TYPE.WOLF);
+        CreateSpecies(1, ORGANISM_TYPE.GRASS);
+//        CreateSpecies(1, ORGANISM_TYPE.WOLF);
+
+//        CreateSpecies(WOLFS_COUNT, ORGANISM_TYPE.WOLF);
 //        CreateSpecies(SHEEPS_COUNT, ORGANISM_TYPE.SHEEP);
 //        CreateSpecies(FOXES_COUNT, ORGANISM_TYPE.FOX);
 //        CreateSpecies(TURTLES_COUNT, ORGANISM_TYPE.TURTLE);
@@ -153,26 +200,37 @@ public class World
     }
 
     public void Simulate() {
-        MakeTurn();
-        displayer.UpdateInterface();
+        while (true) {
+            MakeTurn();
+
+            displayer.UpdateInterface();
+
+
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 
-    ArrayList<Point2D> GetFieldsInRadius(Point2D position, int radius) {
+    public ArrayList<Point2D> GetFieldsInRadius(Point2D position, int radius) {
         ArrayList<Point2D> fields = new ArrayList<Point2D>();
 
-        for (int i = 0; i < organisms.size(); i++)
-        {
-            Point2D current = organisms.get(i).GetPosition();
+        for (int x = 0; x < dimentions.getX(); x++) {
+            for (int y = 0; y < dimentions.getY(); y++) {
+                Point2D current = new Point2D.Double(x, y);
 
-            if(ArePointsInDistance(current, position, radius)) {
-                fields.add(current);
+                if(ArePointsInDistance(current, position, radius) && !current.equals(position)) {
+                    fields.add(current);
+                }
             }
         }
 
         return fields;
     }
-    ArrayList<Point2D> GetFreeNeighbouringFields(Point2D position) {
+    public ArrayList<Point2D> GetFreeNeighbouringFields(Point2D position) {
         ArrayList<Point2D> free = new ArrayList<Point2D>();
         free.add(new Point2D.Double(position.getX() + 1, position.getY()));
         free.add(new Point2D.Double(position.getX() - 1, position.getY()));
@@ -183,7 +241,7 @@ public class World
         {
             Organism current = GetOrganismAtPosition(free.get(i));
 
-            if(current == null) {
+            if(current != null) {
                 free.remove(i);
             }
         }
@@ -192,15 +250,15 @@ public class World
     }
 
 
-    Point2D GetDimentions() {
+    public Point2D GetDimentions() {
         return dimentions;
     }
 
-    ArrayList<Organism> GetOrganisms() {
+    public ArrayList<Organism> GetOrganisms() {
         return organisms;
     }
 
-    Organism GetOrganismAtPosition(Point2D position) {
+    public Organism GetOrganismAtPosition(Point2D position) {
         for (int i = 0; i < organisms.size(); i++)
         {
             Organism current = organisms.get(i);
@@ -213,22 +271,23 @@ public class World
         return null;
     }
 
-    Controller GetController() {
+    public Controller GetController() {
         return controller;
     }
 
-    Displayer GetDisplayer() {
+    public Displayer GetDisplayer() {
         return displayer;
     }
 
 
-    void SetPlayer(Human newPlayer) {
+    public void SetPlayer(Human newPlayer) {
         player = newPlayer; // FIX
     }
 
-    Human GetPlayer() {
+    public Human GetPlayer() {
         return player;
     }
+
 
 
 //    void SaveToFile();

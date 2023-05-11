@@ -9,4 +9,9 @@ public class Human extends Animal {
         super(_position, 5, 4);
         type = ORGANISM_TYPE.HUMAN;
     }
+
+    @Override
+    protected Animal GiveBirth(Point2D breedPosition) {
+        return null;
+    }
 }

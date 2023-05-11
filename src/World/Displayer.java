@@ -26,9 +26,9 @@ public class Displayer {
 
 
     Displayer() {
-        windowSize = new Point2D.Double(800, 600);
-        boardMargin = new Point2D.Double(200, 0);
-        boardPadding = new Point2D.Double(50, 50);
+        windowSize = new Point2D.Double(1400, 1000);
+        boardMargin = new Point2D.Double(400, 0);
+        boardPadding = new Point2D.Double(100, 100);
 
         int rangeX = (int) Math.abs(windowSize.getX() - boardMargin.getX() - 2 * boardPadding.getX());
         int rangeY = (int) Math.abs(windowSize.getY() - boardMargin.getY() - 2 * boardPadding.getY());
@@ -60,10 +60,12 @@ public class Displayer {
                 int posX = (int) (boardMargin.getX() + boardPadding.getX()) + x * cellSize;
                 int posY = (int) (boardMargin.getY() + boardPadding.getY()) + y * cellSize;
 
+                int finalX = x;
+                int finalY = y;
                 JPanel cell = new JPanel() {
                     @Override
-                    public void paint(Graphics g) {
-                        super.paint(g);
+                    public void paintComponent(Graphics g) {
+                        super.paintComponent(g);
                         g.drawRect(0, 0, cellSize - 1, cellSize - 1);
 
                         // FIX - images disappear after resizing
@@ -87,22 +89,25 @@ public class Displayer {
 
         Organism atPosition = world.GetOrganismAtPosition(new Point2D.Double(x, y));
 
+        JPanel cell = cells.get(cellIndex);
+        Graphics cellGraphisc = cell.getGraphics();
         if(atPosition != null) {
             String iconPath = GetImagePathByOrganismType(atPosition.GetType());
-            JPanel cell = cells.get(cellIndex);
             File file = new File(iconPath);
             try
             {
                 BufferedImage image = ImageIO.read(file);
 
-                cell.getGraphics().drawImage(image, 0, 0, cellSize, cellSize, null);
+                cellGraphisc.drawImage(image, 1, 1, cellSize-2, cellSize-2, null);
             }
             catch (IOException e)
             {
                 System.out.print("Error -> IOException");
             }
-
-
+        }
+        else {
+            cellGraphisc.clearRect(0, 0, cellSize, cellSize);
+            cell.paint(cellGraphisc);
         }
     }
 
@@ -121,18 +126,19 @@ public class Displayer {
         String publicPart = "/public";
         String suffix = null;
         switch (organismType) {
-            case SHEEP: suffix = "/sheep.jpg"; break;
+            case SHEEP: suffix = "/sheep.png"; break;
             case WOLF: suffix = "/wolf.jpg"; break;
-            case FOX: suffix = "/fox.jpg"; break;
-            case TURTLE: suffix = "/turtle.jpg"; break;
-            case ANTILOPE: suffix = "/antilope.jpg"; break;
+            case FOX: suffix = "/fox.png"; break;
+            case TURTLE: suffix = "/turtle.png"; break;
+            case ANTILOPE: suffix = "/antelope.png"; break;
 
-            case GRASS: suffix = "/grass.jpg"; break;
+            case GRASS: suffix = "/grass.png"; break;
             case SOW_THISTLE: suffix = "/sow_thistle.jpg"; break;
-            case GUARANA: suffix = "/guarana.jpg"; break;
-            case BELLADONNA: suffix = "/belladonna.jpg"; break;
+            case GUARANA: suffix = "/guarana.png"; break;
+            case BELLADONNA: suffix = "/belladonna.png"; break;
             case SOSNOWSKYS_HOGWEED: suffix = "/sosnowskys_hogweed.jpg"; break;
-            case HUMAN: suffix = "/human.jpg"; break;
+
+            case HUMAN: suffix = "/human.png"; break;
         }
 
         if(suffix == null) {
@@ -143,5 +149,8 @@ public class Displayer {
     }
     public void UpdateInterface() {
         UpdateBoard();
+    }
+
+    public void AddLog(String s) {
     }
 }

@@ -29,8 +29,11 @@ public abstract class Organism
 
     public abstract void Action();
 
-    protected DEFENCE_RESULT Defend(Organism attacker) {
-        return null;
+    public DEFENCE_RESULT Defend(Organism attacker) {
+        if (attacker.GetStrength() >= strength) {
+            return DEFENCE_RESULT.TARGET_KILLED;
+        }
+        return DEFENCE_RESULT.ATTACKER_KILLED;
     }
 
 

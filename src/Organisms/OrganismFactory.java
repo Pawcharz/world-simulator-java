@@ -21,7 +21,7 @@ public class OrganismFactory {
             case TURTLE:
                 return new Turtle(_position);
             case ANTILOPE:
-                return new Antilope(_position);
+                return new Antelope(_position);
             case GRASS:
                 return new Grass(_position);
             case SOW_THISTLE:
