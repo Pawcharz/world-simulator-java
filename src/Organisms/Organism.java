@@ -1,7 +1,7 @@
 package Organisms;
 
-import Utlis.DEFENCE_RESULT;
-import Utlis.ORGANISM_TYPE;
+import Utils.DEFENCE_RESULT;
+import Utils.ORGANISM_TYPE;
 
 import java.awt.geom.Point2D;
 

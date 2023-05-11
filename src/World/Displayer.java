@@ -1,11 +1,11 @@
 package World;
 
 import Organisms.Organism;
-import Utlis.ORGANISM_TYPE;
+import Utils.ORGANISM_TYPE;
+import Utils.Utils;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -64,8 +64,11 @@ public class Displayer {
                     @Override
                     public void paint(Graphics g) {
                         super.paint(g);
-                        g.drawRect(0, 0, cellSize-1, cellSize-1);
+                        g.drawRect(0, 0, cellSize - 1, cellSize - 1);
+
+                        // FIX - images disappear after resizing
                     }
+
                 };
                 cell.setLocation(posX, posY);
                 cell.setSize(cellSize, cellSize);
@@ -77,6 +80,32 @@ public class Displayer {
         }
     }
 
+    private void UpdateCell(int x, int y) {
+        World world = World.GetInstance();
+
+        int cellIndex = x * (int)world.GetDimentions().getX() + y;
+
+        Organism atPosition = world.GetOrganismAtPosition(new Point2D.Double(x, y));
+
+        if(atPosition != null) {
+            String iconPath = GetImagePathByOrganismType(atPosition.GetType());
+            JPanel cell = cells.get(cellIndex);
+            File file = new File(iconPath);
+            try
+            {
+                BufferedImage image = ImageIO.read(file);
+
+                cell.getGraphics().drawImage(image, 0, 0, cellSize, cellSize, null);
+            }
+            catch (IOException e)
+            {
+                System.out.print("Error -> IOException");
+            }
+
+
+        }
+    }
+
     private void UpdateBoard() {
         World world = World.GetInstance();
         int sizeX = (int)world.GetDimentions().getX();
@@ -84,46 +113,33 @@ public class Displayer {
 
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
-                int cellIndex = x * sizeX + y * sizeY;
-
-                Organism atPosition = world.GetOrganismAtPosition(new Point2D.Double(x, y));
-
-                if(atPosition != null) {
-                    String iconPath = GetImagePathByOrganismType(atPosition.GetType());
-                    JPanel cell = cells.get(cellIndex);
-                    try
-                    {
-                        BufferedImage image = ImageIO.read(new File(iconPath));
-
-                        cell.getGraphics().drawImage(image, 0, 0, null);
-                    }
-                    catch (IOException e)
-                    {
-                        //Not handled.
-                    }
-
-
-                }
-
+                UpdateCell(x, y);
             }
         }
     }
     private String GetImagePathByOrganismType(ORGANISM_TYPE organismType) {
+        String publicPart = "/public";
+        String suffix = null;
         switch (organismType) {
-            case SHEEP: return "dsds";
-            case WOLF: return "dsds";
-            case FOX: return "dsds";
-            case TURTLE: return "dsds";
-            case ANTILOPE: return "dsds";
+            case SHEEP: suffix = "/sheep.jpg"; break;
+            case WOLF: suffix = "/wolf.jpg"; break;
+            case FOX: suffix = "/fox.jpg"; break;
+            case TURTLE: suffix = "/turtle.jpg"; break;
+            case ANTILOPE: suffix = "/antilope.jpg"; break;
 
-            case GRASS: return "dsds";
-            case SOW_THISTLE: return "dsds";
-            case GUARANA: return "dsds";
-            case BELLADONNA: return "dsds";
-            case SOSNOWSKYS_HOGWEED: return "dsds";
-            case HUMAN: return "dsds";
-            default: return null;
+            case GRASS: suffix = "/grass.jpg"; break;
+            case SOW_THISTLE: suffix = "/sow_thistle.jpg"; break;
+            case GUARANA: suffix = "/guarana.jpg"; break;
+            case BELLADONNA: suffix = "/belladonna.jpg"; break;
+            case SOSNOWSKYS_HOGWEED: suffix = "/sosnowskys_hogweed.jpg"; break;
+            case HUMAN: suffix = "/human.jpg"; break;
         }
+
+        if(suffix == null) {
+            return null;
+        }
+
+        return Utils.GetPath(publicPart + suffix);
     }
     public void UpdateInterface() {
         UpdateBoard();

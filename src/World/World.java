@@ -2,13 +2,13 @@ package World;
 
 import Organisms.Animals.Human;
 import Organisms.Organism;
-import Utlis.ORGANISM_TYPE;
+import Utils.ORGANISM_TYPE;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
-import static Utlis.Utlis.ArePointsInDistance;
-import static Utlis.Utlis.RandomPoint2D;
+import static Utils.Utils.ArePointsInDistance;
+import static Utils.Utils.RandomPoint2D;
 import Organisms.OrganismFactory;
 
 public class World

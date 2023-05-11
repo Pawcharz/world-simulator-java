@@ -1,8 +1,8 @@
-package Utlis;
+package Utils;
 
 import java.awt.geom.Point2D;
 
-public class Utlis {
+public class Utils {
 
     public static Point2D RandomPoint2D(Point2D min, Point2D max) {
         int distX = (int) (max.getX() - min.getX());
@@ -27,5 +27,10 @@ public class Utlis {
         }
 
         return false;
+    }
+
+    public static String GetPath(String path) {
+        String absolutePath = System.getProperty("user.dir");
+        return absolutePath + "/src" + path;
     }
 }

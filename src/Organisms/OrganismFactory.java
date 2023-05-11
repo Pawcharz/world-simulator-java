@@ -1,10 +1,9 @@
 package Organisms;
 
 import Organisms.Animals.*;
-import Organisms.Organism;
 
 import Organisms.Plants.*;
-import Utlis.ORGANISM_TYPE;
+import Utils.ORGANISM_TYPE;
 
 import java.awt.geom.Point2D;
 

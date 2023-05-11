@@ -1,4 +1,4 @@
-package Utlis;
+package Utils;
 
 public enum ORGANISM_TYPE {
     HUMAN,
