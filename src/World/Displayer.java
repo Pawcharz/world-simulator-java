@@ -91,6 +91,7 @@ public class Displayer {
 
         JPanel cell = cells.get(cellIndex);
         Graphics cellGraphisc = cell.getGraphics();
+        cellGraphisc.clearRect(1, 1, cellSize-2, cellSize-2);
         if(atPosition != null) {
             String iconPath = GetImagePathByOrganismType(atPosition.GetType());
             File file = new File(iconPath);
@@ -104,10 +105,6 @@ public class Displayer {
             {
                 System.out.print("Error -> IOException");
             }
-        }
-        else {
-            cellGraphisc.clearRect(0, 0, cellSize, cellSize);
-            cell.paint(cellGraphisc);
         }
     }
 

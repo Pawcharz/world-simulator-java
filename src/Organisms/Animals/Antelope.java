@@ -76,7 +76,7 @@ public class Antelope extends Animal {
         double random = Math.random();
 
         if (random > ANTELOPE_ESCAPE_CHANCE) {
-            return ((Animal) this).Defend(attacker);
+            return super.Defend(attacker);
         }
 
         // Tries to escape

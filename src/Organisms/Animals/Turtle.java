@@ -32,7 +32,7 @@ public class Turtle extends Animal {
         double random = Math.random();
 
         if (random <= MOVEMENT_CHANCE) {
-            ((Animal) this).Movement();
+            super.Movement();
         }
     }
 
