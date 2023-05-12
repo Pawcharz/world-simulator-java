@@ -20,4 +20,14 @@ public class SowThistle extends Plant {
 
         return child;
     }
+
+    @Override
+    void Spread() {
+
+        for (int i = 0; i < 3; i++)
+        {
+            super.Spread();
+        }
+
+    }
 }
