@@ -17,7 +17,7 @@ public abstract class Animal extends Organism {
     }
 
 
-    private void Movement() {
+    protected void Movement() {
 
         World world = World.GetInstance();
 
@@ -53,7 +53,7 @@ public abstract class Animal extends Organism {
         }
     }
 
-    private void Attack(Organism target) {
+    protected void Attack(Organism target) {
         World world = World.GetInstance();
 
         Point2D targetInitialPosition = target.GetPosition();
@@ -134,12 +134,15 @@ public abstract class Animal extends Organism {
         return neighbouringFields.get(index);
     }
 
-    private ArrayList<Point2D> GetPositionsToMove() {
+    protected ArrayList<Point2D> GetPositionsToMove() {
         World world = World.GetInstance();
 
         return world.GetFieldsInRadius(position, 1);
     }
 
+    public DEFENCE_RESULT Defend(Animal attacker) {
+        return ((Organism) this).Defend(attacker);
+    }
 
     @Override
     public void Action() {

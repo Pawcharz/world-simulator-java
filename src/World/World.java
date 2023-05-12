@@ -180,7 +180,9 @@ public class World
 
 //        CreatePlayer();
 
-        CreateSpecies(1, ORGANISM_TYPE.GRASS);
+        CreateSpecies(1, ORGANISM_TYPE.ANTILOPE);
+        CreateSpecies(1, ORGANISM_TYPE.WOLF);
+//        CreateSpecies(1, ORGANISM_TYPE.GRASS);
 //        CreateSpecies(1, ORGANISM_TYPE.WOLF);
 
 //        CreateSpecies(WOLFS_COUNT, ORGANISM_TYPE.WOLF);
