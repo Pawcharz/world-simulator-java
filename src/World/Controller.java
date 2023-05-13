@@ -2,6 +2,9 @@ package World;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Controller extends KeyAdapter {
     private static final char KEY_ENTER = '\n';
@@ -44,7 +47,17 @@ public class Controller extends KeyAdapter {
 
     public void keyPressed(KeyEvent event) {
         pressedCharacter = event.getKeyChar();
-        isActionKeyPressed = true;
+
+        List<Character> available = Arrays.asList('a', 's', 'd', 'w', ' ');
+
+        if(available.contains(pressedCharacter)) {
+            isActionKeyPressed = true;
+        }
+        else {
+            Displayer displayer = World.GetInstance().GetDisplayer();
+            displayer.AddLog("Invalid key pressed - try again");
+            displayer.UpdateInterface();
+        }
     }
 
     public char GetPressedCharacter() {
