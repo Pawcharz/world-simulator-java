@@ -11,8 +11,6 @@ import static Utils.Utils.ArePointsInDistance;
 import static Utils.Utils.RandomPoint2D;
 import Organisms.OrganismFactory;
 
-import javax.swing.*;
-
 public class World
 {
     private static World worldInstance;
@@ -122,8 +120,9 @@ public class World
 
     private void MakeTurn() {
         SortOrganisms();
+        int initialOrganismsCount = organisms.size();
 
-        for (int i = organisms.size() - 1; i >= 0; i--)
+        for (int i = 0; i < initialOrganismsCount; i++)
         {
             Organism current = organisms.get(i);
 
@@ -140,6 +139,10 @@ public class World
 
             if(!current.IsAlive()) {
                 organisms.remove(i);
+
+                if(current.GetType() == ORGANISM_TYPE.HUMAN) {
+                    player = null;
+                }
             }
         }
     }
@@ -184,7 +187,7 @@ public class World
 
 
 //        CreateSpecies(1, ORGANISM_TYPE.SOSNOWSKYS_HOGWEED);
-//        CreateSpecies(2, ORGANISM_TYPE.SHEEP);
+        CreateSpecies(2, ORGANISM_TYPE.SHEEP);
 
         CreateSpecies(WOLFS_COUNT, ORGANISM_TYPE.WOLF);
         CreateSpecies(SHEEPS_COUNT, ORGANISM_TYPE.SHEEP);
@@ -205,18 +208,14 @@ public class World
     public void Simulate() {
         displayer.UpdateInterface();
 
-        while (true) {
+        while (player != null) {
             MakeTurn();
-
             displayer.UpdateInterface();
-
-
-//            try {
-//                Thread.sleep(400);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
         }
+
+        displayer.AddLog("Human got killed - GAME OVER");
+
+        displayer.UpdateInterface();
     }
 
 
@@ -255,7 +254,7 @@ public class World
     }
 
 
-    public Point2D GetDimentions() {
+    public Point2D GetDimensions() {
         return dimentions;
     }
 

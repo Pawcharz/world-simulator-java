@@ -16,33 +16,42 @@ import javax.swing.*;
 public class Displayer {
 
     private JFrame window;
-
     ArrayList<JPanel> cells;
+    DefaultListModel<String> logsListModel;
+
     private Point2D windowSize;
 
     private int cellSize;
-    private Point2D boardMargin;
-    private Point2D boardPadding;
+
+    private Point2D windowPadding;
+    private Point2D logListSize;
+
+    private Point2D boardSize;
+
+    private int windowElementsGap;
 
     private ArrayList<String> logs;
 
 
     Displayer() {
         windowSize = new Point2D.Double(1400, 1000);
-        boardMargin = new Point2D.Double(400, 0);
-        boardPadding = new Point2D.Double(100, 100);
+        windowPadding = new Point2D.Double(50, 50);
+        windowElementsGap = 50;
 
-        int rangeX = (int) Math.abs(windowSize.getX() - boardMargin.getX() - 2 * boardPadding.getX());
-        int rangeY = (int) Math.abs(windowSize.getY() - boardMargin.getY() - 2 * boardPadding.getY());
+        logListSize = new Point2D.Double(400, 500);
+
+        int boardRangeX = (int) Math.abs(windowSize.getX() - logListSize.getX() - 2 * windowPadding.getX() - windowElementsGap);
+        int boardRangeY = (int) Math.abs(windowSize.getY() - 2 * windowPadding.getY());
 
         World world = World.GetInstance();
-        Point2D worldSize = world.GetInstance().GetDimentions();
+        Point2D worldSize = world.GetInstance().GetDimensions();
 
         // We choose higher pixels per cell ratio
-        cellSize = Math.floorDiv(rangeY, (int)worldSize.getY());
-        if(rangeY / worldSize.getY() >= rangeX / worldSize.getX()) {
-            cellSize = Math.floorDiv(rangeX, (int)worldSize.getX());
+        cellSize = Math.floorDiv(boardRangeY, (int)worldSize.getY());
+        if(boardRangeY / worldSize.getY() >= boardRangeX / worldSize.getX()) {
+            cellSize = Math.floorDiv(boardRangeX, (int)worldSize.getX());
         }
+        boardSize = new Point2D.Double(cellSize * worldSize.getX(), cellSize * worldSize.getY());
 
         window = new JFrame("Paweł Blicharz | s193193 | World Simulation");
         window.setSize((int) windowSize.getX(), (int) windowSize.getY());
@@ -55,18 +64,28 @@ public class Displayer {
         window.setVisible(true);
 
         logs = new ArrayList<String>();
+
+        logsListModel = new DefaultListModel<String>();
+
+        JList logsList = new JList<String>(logsListModel);
+        logsList.setLayout(null);
+        logsList.setSize((int) logListSize.getX(), (int) logListSize.getY());
+        logsList.setLocation((int) windowPadding.getX(), (int) windowPadding.getY());
+
+        window.add(logsList);
     }
 
 
     private void DrawBoard() {
         cells = new ArrayList<>();
 
-        Point2D worldSize = World.GetInstance().GetDimentions();
+        Point2D worldSize = World.GetInstance().GetDimensions();
 
         for (int x = 0; x < worldSize.getX(); x++) {
             for (int y = (int) (worldSize.getY() - 1); y >= 0; y--) {
-                int posX = (int) (boardMargin.getX() + boardPadding.getX()) + x * cellSize;
-                int posY = (int) (boardMargin.getY() + boardPadding.getY()) + y * cellSize;
+
+                int posX = (int) (windowSize.getX() - boardSize.getX() - windowPadding.getX()) + x * cellSize;
+                int posY = (int) (windowPadding.getY()) + y * cellSize;
 
                 int finalX = x;
                 int finalY = y;
@@ -93,7 +112,7 @@ public class Displayer {
     private void UpdateCell(int x, int y) {
         World world = World.GetInstance();
 
-        int cellIndex = x * (int)world.GetDimentions().getX() + y;
+        int cellIndex = x * (int)world.GetDimensions().getX() + y;
 
         Organism atPosition = world.GetOrganismAtPosition(new Point2D.Double(x, y));
 
@@ -118,13 +137,20 @@ public class Displayer {
 
     private void UpdateBoard() {
         World world = World.GetInstance();
-        int sizeX = (int)world.GetDimentions().getX();
-        int sizeY = (int)world.GetDimentions().getY();
+        int sizeX = (int)world.GetDimensions().getX();
+        int sizeY = (int)world.GetDimensions().getY();
 
         for (int x = 0; x < sizeX; x++) {
             for (int y = sizeY - 1; y >= 0; y--) {
                 UpdateCell(x, y);
             }
+        }
+    }
+
+    private void UpdateLogsDisplay() {
+        logsListModel.clear();
+        for (int i = 0; i < logs.size(); i++) {
+            logsListModel.addElement(logs.get(i));
         }
     }
     private String GetImagePathByOrganismType(ORGANISM_TYPE organismType) {
@@ -154,9 +180,11 @@ public class Displayer {
     }
     public void UpdateInterface() {
         UpdateBoard();
+        UpdateLogsDisplay();
     }
 
-    public void AddLog(String s) {
+    public void AddLog(String message) {
+        logs.add(message);
     }
 
     public void ResetLogs() {
