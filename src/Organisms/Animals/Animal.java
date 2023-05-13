@@ -79,6 +79,9 @@ public abstract class Animal extends Organism {
 
             displayer.AddLog(target.GetDescription() + " escaped from attack of " + GetDescription());
         }
+        else if (result == DEFENCE_RESULT.TARGET_BLOCKS) {
+            displayer.AddLog(target.GetDescription() + " blocks attack of " + GetDescription());
+        }
     }
 
     protected abstract Animal GiveBirth(Point2D breedPosition);

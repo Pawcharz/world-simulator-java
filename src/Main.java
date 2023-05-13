@@ -6,7 +6,7 @@ public class Main {
     public static void main(String[] args) {
 
         World world = World.GetInstance();
-        world.Initialize(new Point2D.Double(6, 6));
+        world.Initialize(new Point2D.Double(20, 20));
 
         world.Simulate();
     }

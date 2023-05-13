@@ -37,6 +37,11 @@ public class Controller extends KeyAdapter {
             if (mode == SIMULATION_MODE.SIMULATION_PLAYING) {
                 errorOccured = world.GetPlayer().HandleControlledAction();
 
+                if(pressedCharacter == '.') {
+                    world.SaveToFile("test.txt");
+                    return;
+                }
+
                 isActionKeyPressed = false;
 
                 if (!errorOccured) {

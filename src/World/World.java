@@ -5,6 +5,9 @@ import Organisms.Organism;
 import Utils.ORGANISM_TYPE;
 
 import java.awt.geom.Point2D;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static Utils.Utils.ArePointsInDistance;
@@ -186,20 +189,20 @@ public class World
         CreatePlayer();
 
 
-        CreateSpecies(1, ORGANISM_TYPE.ANTILOPE);
+//        CreateSpecies(1, ORGANISM_TYPE.TURTLE);
 //        CreateSpecies(2, ORGANISM_TYPE.SHEEP);
-//
-//        CreateSpecies(WOLFS_COUNT, ORGANISM_TYPE.WOLF);
-//        CreateSpecies(SHEEPS_COUNT, ORGANISM_TYPE.SHEEP);
-//        CreateSpecies(FOXES_COUNT, ORGANISM_TYPE.FOX);
-//        CreateSpecies(TURTLES_COUNT, ORGANISM_TYPE.TURTLE);
-//        CreateSpecies(ANTELOPES_COUNT, ORGANISM_TYPE.ANTILOPE);
-//
-//        CreateSpecies(GRASS_COUNT, ORGANISM_TYPE.GRASS);
-//        CreateSpecies(SOW_THISTLE_COUNT, ORGANISM_TYPE.SOW_THISTLE);
-//        CreateSpecies(GUARANA_COUNT, ORGANISM_TYPE.GUARANA);
-//        CreateSpecies(BELLADONNA_COUNT, ORGANISM_TYPE.BELLADONNA);
-//        CreateSpecies(SOSNOWSKYS_HOGWEED_COUNT, ORGANISM_TYPE.SOSNOWSKYS_HOGWEED);
+
+        CreateSpecies(WOLFS_COUNT, ORGANISM_TYPE.WOLF);
+        CreateSpecies(SHEEPS_COUNT, ORGANISM_TYPE.SHEEP);
+        CreateSpecies(FOXES_COUNT, ORGANISM_TYPE.FOX);
+        CreateSpecies(TURTLES_COUNT, ORGANISM_TYPE.TURTLE);
+        CreateSpecies(ANTELOPES_COUNT, ORGANISM_TYPE.ANTILOPE);
+
+        CreateSpecies(GRASS_COUNT, ORGANISM_TYPE.GRASS);
+        CreateSpecies(SOW_THISTLE_COUNT, ORGANISM_TYPE.SOW_THISTLE);
+        CreateSpecies(GUARANA_COUNT, ORGANISM_TYPE.GUARANA);
+        CreateSpecies(BELLADONNA_COUNT, ORGANISM_TYPE.BELLADONNA);
+        CreateSpecies(SOSNOWSKYS_HOGWEED_COUNT, ORGANISM_TYPE.SOSNOWSKYS_HOGWEED);
 
         controller = new Controller();
         displayer = new Displayer();
@@ -291,7 +294,7 @@ public class World
 
 
     public void SetPlayer(Human newPlayer) {
-        player = newPlayer; // FIX
+        player = newPlayer;
     }
 
     public Human GetPlayer() {
@@ -299,8 +302,80 @@ public class World
     }
 
 
+    String GetOrganismFileSaveContent(Organism organism) {
+        String content = "";
+        
+        content += organism.GetStrength() + " ";
+        content += organism.GetInitiative() + " ";
+        content += organism.GetAge() + " ";
 
-//    void SaveToFile();
+        content += (int)organism.GetPosition().getX() + " ";
+        content += (int)organism.GetPosition().getY() + " ";
+
+        ORGANISM_TYPE type = organism.GetType();
+        content += type + " "; // FIX - can I do it like this?
+
+        if(organism.IsAlive()) {
+            content += "ALIVE" + " ";
+        }
+        else {
+            content += "DEAD" + " ";
+        }
+
+
+        if (type == ORGANISM_TYPE.HUMAN) {
+            Human asHuman = (Human)organism;
+            content += asHuman.GetStrengthBuff() + " ";
+            content += asHuman.GetAbilityCooldown() + " ";
+        }
+
+        return content;
+    }
+    private String PrepareFileContentToSave() {
+        String content = "";
+        content += organisms.size() + " ";
+
+        content += (int)dimentions.getX() + " ";
+        content += (int)dimentions.getX() + " ";
+
+
+        int organismsSize = organisms.size();
+
+        for (int i = 0; i < organismsSize; i++)
+        {
+            Organism current = organisms.get(i);
+
+            content += GetOrganismFileSaveContent(current) + " ";
+        }
+
+        return content;
+    }
+    void SaveToFile(String fileName) {
+
+        try {
+            File file = new File(fileName);
+            if (file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+        try {
+            FileWriter myWriter = new FileWriter(fileName);
+            String content = PrepareFileContentToSave();
+            myWriter.write(content);
+            myWriter.close();
+
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
 
 //    void LoadFromFile();
 };
