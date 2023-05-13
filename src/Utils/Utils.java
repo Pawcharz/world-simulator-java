@@ -35,4 +35,12 @@ public class Utils {
         String absolutePath = System.getProperty("user.dir");
         return absolutePath + "/src" + path;
     }
+
+
+    public static Point2D PointsSum(Point2D pointA, Point2D pointB) {
+        double sumX = pointA.getX() + pointB.getX();
+        double sumY = pointA.getY() + pointB.getY();
+
+        return new Point2D.Double(sumX, sumY);
+    }
 }

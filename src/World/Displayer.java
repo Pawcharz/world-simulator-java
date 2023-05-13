@@ -24,6 +24,8 @@ public class Displayer {
     private Point2D boardMargin;
     private Point2D boardPadding;
 
+    private ArrayList<String> logs;
+
 
     Displayer() {
         windowSize = new Point2D.Double(1400, 1000);
@@ -33,7 +35,8 @@ public class Displayer {
         int rangeX = (int) Math.abs(windowSize.getX() - boardMargin.getX() - 2 * boardPadding.getX());
         int rangeY = (int) Math.abs(windowSize.getY() - boardMargin.getY() - 2 * boardPadding.getY());
 
-        Point2D worldSize = World.GetInstance().GetDimentions();
+        World world = World.GetInstance();
+        Point2D worldSize = world.GetInstance().GetDimentions();
 
         // We choose higher pixels per cell ratio
         cellSize = Math.floorDiv(rangeY, (int)worldSize.getY());
@@ -46,7 +49,12 @@ public class Displayer {
         window.setLayout(null);
         DrawBoard();
 
+        Controller controller = world.GetController();
+        window.addKeyListener(controller);
+
         window.setVisible(true);
+
+        logs = new ArrayList<String>();
     }
 
 
@@ -56,7 +64,7 @@ public class Displayer {
         Point2D worldSize = World.GetInstance().GetDimentions();
 
         for (int x = 0; x < worldSize.getX(); x++) {
-            for (int y = 0; y < worldSize.getY(); y++) {
+            for (int y = (int) (worldSize.getY() - 1); y >= 0; y--) {
                 int posX = (int) (boardMargin.getX() + boardPadding.getX()) + x * cellSize;
                 int posY = (int) (boardMargin.getY() + boardPadding.getY()) + y * cellSize;
 
@@ -114,7 +122,7 @@ public class Displayer {
         int sizeY = (int)world.GetDimentions().getY();
 
         for (int x = 0; x < sizeX; x++) {
-            for (int y = 0; y < sizeY; y++) {
+            for (int y = sizeY - 1; y >= 0; y--) {
                 UpdateCell(x, y);
             }
         }
@@ -149,5 +157,9 @@ public class Displayer {
     }
 
     public void AddLog(String s) {
+    }
+
+    public void ResetLogs() {
+        logs.clear();
     }
 }

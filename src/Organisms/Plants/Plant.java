@@ -18,6 +18,7 @@ public abstract class Plant extends Organism {
 
     @Override
     public void Action() {
+        age += 1;
         Spread();
     }
 

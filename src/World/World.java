@@ -11,6 +11,8 @@ import static Utils.Utils.ArePointsInDistance;
 import static Utils.Utils.RandomPoint2D;
 import Organisms.OrganismFactory;
 
+import javax.swing.*;
+
 public class World
 {
     private static World worldInstance;
@@ -178,40 +180,42 @@ public class World
         int BELLADONNA_COUNT = 3;
         int SOSNOWSKYS_HOGWEED_COUNT = 2;
 
-//        CreatePlayer();
+        CreatePlayer();
 
 
-        CreateSpecies(1, ORGANISM_TYPE.SOSNOWSKYS_HOGWEED);
-        CreateSpecies(2, ORGANISM_TYPE.SHEEP);
+//        CreateSpecies(1, ORGANISM_TYPE.SOSNOWSKYS_HOGWEED);
+//        CreateSpecies(2, ORGANISM_TYPE.SHEEP);
 
-//        CreateSpecies(WOLFS_COUNT, ORGANISM_TYPE.WOLF);
-//        CreateSpecies(SHEEPS_COUNT, ORGANISM_TYPE.SHEEP);
-//        CreateSpecies(FOXES_COUNT, ORGANISM_TYPE.FOX);
-//        CreateSpecies(TURTLES_COUNT, ORGANISM_TYPE.TURTLE);
-//        CreateSpecies(ANTELOPES_COUNT, ORGANISM_TYPE.ANTILOPE);
-//
-//        CreateSpecies(GRASS_COUNT, ORGANISM_TYPE.GRASS);
-//        CreateSpecies(SOW_THISTLE_COUNT, ORGANISM_TYPE.SOW_THISTLE);
-//        CreateSpecies(GUARANA_COUNT, ORGANISM_TYPE.GUARANA);
-//        CreateSpecies(BELLADONNA_COUNT, ORGANISM_TYPE.BELLADONNA);
-//        CreateSpecies(SOSNOWSKYS_HOGWEED_COUNT, ORGANISM_TYPE.SOSNOWSKYS_HOGWEED);
+        CreateSpecies(WOLFS_COUNT, ORGANISM_TYPE.WOLF);
+        CreateSpecies(SHEEPS_COUNT, ORGANISM_TYPE.SHEEP);
+        CreateSpecies(FOXES_COUNT, ORGANISM_TYPE.FOX);
+        CreateSpecies(TURTLES_COUNT, ORGANISM_TYPE.TURTLE);
+        CreateSpecies(ANTELOPES_COUNT, ORGANISM_TYPE.ANTILOPE);
+
+        CreateSpecies(GRASS_COUNT, ORGANISM_TYPE.GRASS);
+        CreateSpecies(SOW_THISTLE_COUNT, ORGANISM_TYPE.SOW_THISTLE);
+        CreateSpecies(GUARANA_COUNT, ORGANISM_TYPE.GUARANA);
+        CreateSpecies(BELLADONNA_COUNT, ORGANISM_TYPE.BELLADONNA);
+        CreateSpecies(SOSNOWSKYS_HOGWEED_COUNT, ORGANISM_TYPE.SOSNOWSKYS_HOGWEED);
 
         controller = new Controller();
         displayer = new Displayer();
     }
 
     public void Simulate() {
+        displayer.UpdateInterface();
+
         while (true) {
             MakeTurn();
 
             displayer.UpdateInterface();
 
 
-            try {
-                Thread.sleep(400);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                Thread.sleep(400);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
         }
     }
 
