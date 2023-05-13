@@ -22,4 +22,10 @@ public class Belladonna extends Plant {
 
         return child;
     }
+
+
+    @Override
+    public String GetName() {
+        return "Belladonna";
+    }
 }

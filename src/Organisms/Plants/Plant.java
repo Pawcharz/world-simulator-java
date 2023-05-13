@@ -32,7 +32,7 @@ public abstract class Plant extends Organism {
 
             Displayer displayer = world.GetDisplayer();
 
-            displayer.AddLog(GetDescribtion() + " spread creating new " + newPlant.GetDescribtion());
+            displayer.AddLog(GetDescription() + " spread creating new " + newPlant.GetDescription());
         }
     }
 
@@ -55,4 +55,7 @@ public abstract class Plant extends Organism {
         return neighbouringFields.get(index);
     }
 
+
+    @Override
+    public abstract String GetName();
 }

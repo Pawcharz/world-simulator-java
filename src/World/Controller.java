@@ -21,28 +21,29 @@ public class Controller extends KeyAdapter {
     }
 
     public void ProcessKeyboardInput() {
-        while(!isActionKeyPressed) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        while (true) {
+            while(!isActionKeyPressed) {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            World world = World.GetInstance();
+
+            boolean errorOccured = true;
+
+            if (mode == SIMULATION_MODE.SIMULATION_PLAYING) {
+                errorOccured = world.GetPlayer().HandleControlledAction();
+
+                isActionKeyPressed = false;
+
+                if (!errorOccured) {
+                    return;
+                }
             }
         }
-
-        World world = World.GetInstance();
-
-        boolean errorOccured = true;
-
-        if (mode == SIMULATION_MODE.SIMULATION_PLAYING) {
-            errorOccured = world.GetPlayer().HandleControlledAction();
-
-            isActionKeyPressed = false;
-
-            if (!errorOccured) {
-                return;
-            }
-        }
-
     }
 
     public void keyPressed(KeyEvent event) {

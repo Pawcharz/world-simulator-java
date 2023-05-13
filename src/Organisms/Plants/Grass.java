@@ -20,4 +20,10 @@ public class Grass extends Plant {
 
         return child;
     }
+
+
+    @Override
+    public String GetName() {
+        return "Grass";
+    }
 }

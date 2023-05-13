@@ -186,20 +186,20 @@ public class World
         CreatePlayer();
 
 
-//        CreateSpecies(1, ORGANISM_TYPE.SOSNOWSKYS_HOGWEED);
-        CreateSpecies(2, ORGANISM_TYPE.SHEEP);
-
-        CreateSpecies(WOLFS_COUNT, ORGANISM_TYPE.WOLF);
-        CreateSpecies(SHEEPS_COUNT, ORGANISM_TYPE.SHEEP);
-        CreateSpecies(FOXES_COUNT, ORGANISM_TYPE.FOX);
-        CreateSpecies(TURTLES_COUNT, ORGANISM_TYPE.TURTLE);
-        CreateSpecies(ANTELOPES_COUNT, ORGANISM_TYPE.ANTILOPE);
-
-        CreateSpecies(GRASS_COUNT, ORGANISM_TYPE.GRASS);
-        CreateSpecies(SOW_THISTLE_COUNT, ORGANISM_TYPE.SOW_THISTLE);
-        CreateSpecies(GUARANA_COUNT, ORGANISM_TYPE.GUARANA);
-        CreateSpecies(BELLADONNA_COUNT, ORGANISM_TYPE.BELLADONNA);
-        CreateSpecies(SOSNOWSKYS_HOGWEED_COUNT, ORGANISM_TYPE.SOSNOWSKYS_HOGWEED);
+        CreateSpecies(1, ORGANISM_TYPE.ANTILOPE);
+//        CreateSpecies(2, ORGANISM_TYPE.SHEEP);
+//
+//        CreateSpecies(WOLFS_COUNT, ORGANISM_TYPE.WOLF);
+//        CreateSpecies(SHEEPS_COUNT, ORGANISM_TYPE.SHEEP);
+//        CreateSpecies(FOXES_COUNT, ORGANISM_TYPE.FOX);
+//        CreateSpecies(TURTLES_COUNT, ORGANISM_TYPE.TURTLE);
+//        CreateSpecies(ANTELOPES_COUNT, ORGANISM_TYPE.ANTILOPE);
+//
+//        CreateSpecies(GRASS_COUNT, ORGANISM_TYPE.GRASS);
+//        CreateSpecies(SOW_THISTLE_COUNT, ORGANISM_TYPE.SOW_THISTLE);
+//        CreateSpecies(GUARANA_COUNT, ORGANISM_TYPE.GUARANA);
+//        CreateSpecies(BELLADONNA_COUNT, ORGANISM_TYPE.BELLADONNA);
+//        CreateSpecies(SOSNOWSKYS_HOGWEED_COUNT, ORGANISM_TYPE.SOSNOWSKYS_HOGWEED);
 
         controller = new Controller();
         displayer = new Displayer();
@@ -243,11 +243,17 @@ public class World
 
         for (int i = free.size() - 1; i >= 0; i--)
         {
-            Organism current = GetOrganismAtPosition(free.get(i));
-
-            if(current != null) {
+            if(!IsWithinBorders(free.get(i))) {
                 free.remove(i);
             }
+            else {
+                Organism current = GetOrganismAtPosition(free.get(i));
+
+                if(current != null) {
+                    free.remove(i);
+                }
+            }
+
         }
 
         return free;

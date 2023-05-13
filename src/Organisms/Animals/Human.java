@@ -17,7 +17,12 @@ public class Human extends Animal {
     private int strengthBuff;
 
     public Human(Point2D _position) {
-        super(_position, 5, 4);
+        super(_position, 5, 40);
+
+        baseStrength = 5;
+        strengthBuff = 0;
+        specialAbilityCooldown = 0;
+
         type = ORGANISM_TYPE.HUMAN;
     }
 
@@ -39,8 +44,9 @@ public class Human extends Animal {
                 UseSpecialAbility();
             }
             else {
-                String message = "You cant use this ability for the next " + specialAbilityCooldown + " turns.";
-                displayer.AddLog(message);
+                displayer.AddLog("You cant use this ability for the next " + specialAbilityCooldown + " turns.");
+                displayer.UpdateInterface();
+                errorOccured = true;
             }
         }
         else {
@@ -122,7 +128,14 @@ public class Human extends Animal {
         else {
             displayer.ResetLogs();
             displayer.AddLog("Tried to move outside of the map, try again");
+            displayer.UpdateInterface();
             return false;
         }
+    }
+
+
+    @Override
+    public String GetName() {
+        return "Human";
     }
 }

@@ -82,9 +82,11 @@ public abstract class Organism
     }
 
 
-    public String GetDescribtion() {
-        return "No Description";
+    public String GetDescription() {
+        return GetName() + "(" + (int)position.getX() + ", " + (int)position.getY() + ")";
     }
+
+    public abstract String GetName();
 
 
     public ORGANISM_TYPE GetType() {

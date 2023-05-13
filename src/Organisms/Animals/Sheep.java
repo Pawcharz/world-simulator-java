@@ -20,4 +20,10 @@ public class Sheep extends Animal {
 
         return child;
     }
+
+
+    @Override
+    public String GetName() {
+        return "Sheep";
+    }
 }

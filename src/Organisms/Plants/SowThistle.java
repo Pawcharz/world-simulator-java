@@ -28,6 +28,11 @@ public class SowThistle extends Plant {
         {
             super.Spread();
         }
+    }
 
+
+    @Override
+    public String GetName() {
+        return "Sow Thistle";
     }
 }

@@ -32,4 +32,10 @@ public class Guarana extends Plant {
         }
         return DEFENCE_RESULT.ATTACKER_KILLED;
     }
+
+
+    @Override
+    public String GetName() {
+        return "Guarana";
+    }
 }

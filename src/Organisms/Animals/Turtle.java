@@ -49,4 +49,10 @@ public class Turtle extends Animal {
 
         return DEFENCE_RESULT.TARGET_KILLED;
     }
+
+
+    @Override
+    public String GetName() {
+        return "Turtle";
+    }
 }

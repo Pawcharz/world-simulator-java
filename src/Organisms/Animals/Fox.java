@@ -46,5 +46,10 @@ public class Fox extends Animal {
         }
 
         return available;
-    }    
+    }
+
+    @Override
+    public String GetName() {
+        return "Fox";
+    }
 }

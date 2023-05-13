@@ -46,4 +46,10 @@ public class SosnowskysHogweed extends Plant {
         }
         return super.Defend(attacker);
     }
+
+
+    @Override
+    public String GetName() {
+        return "Sosnowsky's Hogweed";
+    }
 }

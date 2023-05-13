@@ -64,39 +64,20 @@ public abstract class Animal extends Organism {
 
 
         if (result == DEFENCE_RESULT.TARGET_KILLED) {
-            displayer.AddLog(GetDescribtion() + " killed " + target.GetDescribtion());
+            displayer.AddLog(GetDescription() + " killed " + target.GetDescription());
 
             position = targetInitialPosition;
             target.Die();
         }
         else if (result == DEFENCE_RESULT.ATTACKER_KILLED) {
-            displayer.AddLog(target.GetDescribtion() + " killed " + GetDescribtion());
+            displayer.AddLog(target.GetDescription() + " killed " + GetDescription());
 
             Die();
         }
         else if (result == DEFENCE_RESULT.TARGET_ESCAPED) {
-
-            // FIX - Should probably be implemented in the antelope class
-            ArrayList<Point2D> availablePositions = world.GetFieldsInRadius(targetInitialPosition, 1);
-            int positionsCount = availablePositions.size();
-
-            if (positionsCount == 0) {
-                displayer.AddLog(GetDescribtion() + " killed " + target.GetDescribtion());
-
-                position = target.GetPosition();
-                target.Die();
-
-                return;
-            }
-
             position = targetInitialPosition;
 
-            int index = Utils.RandomInteger(0, positionsCount);
-
-            displayer.AddLog(target.GetDescribtion() + " escaped from attack of " + GetDescribtion());
-
-            target.SetPosition(availablePositions.get(index));
-
+            displayer.AddLog(target.GetDescription() + " escaped from attack of " + GetDescription());
         }
     }
 
@@ -112,7 +93,7 @@ public abstract class Animal extends Organism {
         Animal child = GiveBirth(breedPosition);
 
         Displayer displayer = world.GetDisplayer();
-        displayer.AddLog(GetDescribtion() + " and " + partner.GetDescribtion() + " born the new " + child.GetDescribtion());
+        displayer.AddLog(GetDescription() + " and " + partner.GetDescription() + " born the new " + child.GetDescription());
     }
 
     private Point2D GetBreedPosition(Point2D partnerPosition) {
@@ -149,4 +130,7 @@ public abstract class Animal extends Organism {
         age += 1;
         Movement();
     }
+
+    @Override
+    public abstract String GetName();
 }

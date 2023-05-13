@@ -38,7 +38,7 @@ public class Antelope extends Animal {
         DEFENCE_RESULT result = target.Defend(this);
 
         if (result == DEFENCE_RESULT.TARGET_KILLED) {
-            displayer.AddLog(GetDescribtion() + " killed " + target.GetDescribtion());
+            displayer.AddLog(GetDescription() + " killed " + target.GetDescription());
 
             position = targetPosition;
             target.Die();
@@ -48,23 +48,23 @@ public class Antelope extends Animal {
             double random = Math.random();
             if (random <= ANTELOPE_ESCAPE_CHANCE) {
 
-                boolean escapeSuccess = EscapeFromFight(position);
+                boolean escapeSuccess = EscapeFromFight(targetPosition);
 
                 if (escapeSuccess) {
-                    displayer.AddLog(GetDescribtion() + " attacked and escaped from " + target.GetDescribtion());
+                    displayer.AddLog(GetDescription() + " attacked and escaped from " + target.GetDescription());
                 }
                 else {
-                    displayer.AddLog(target.GetDescribtion() + " killed " + GetDescribtion());
+                    displayer.AddLog(target.GetDescription() + " killed " + GetDescription());
                     this.Die();
                 }
             }
             else {
-                displayer.AddLog(target.GetDescribtion() + " killed " + GetDescribtion());
+                displayer.AddLog(target.GetDescription() + " killed " + GetDescription());
                 this.Die();
             }
         }
         else if (result == DEFENCE_RESULT.TARGET_ESCAPED) {
-            displayer.AddLog(target.GetDescribtion() + " escaped from " + GetDescribtion());
+            displayer.AddLog(target.GetDescription() + " escaped from " + GetDescription());
             position = targetPosition;
         }
     }
@@ -103,5 +103,11 @@ public class Antelope extends Animal {
 
         position = newPosition;
         return true;
+    }
+
+
+    @Override
+    public String GetName() {
+        return "Antelope";
     }
 }
