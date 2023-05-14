@@ -35,12 +35,19 @@ public class Controller extends KeyAdapter {
             boolean errorOccured = true;
 
             if (mode == SIMULATION_MODE.SIMULATION_PLAYING) {
-                errorOccured = world.GetPlayer().HandleControlledAction();
 
                 if(pressedCharacter == '.') {
+                    pressedCharacter = 0;
                     world.SaveToFile("test.txt");
                     return;
                 }
+                if(pressedCharacter == ',') {
+                    pressedCharacter = 0;
+                    world.LoadFromFile("test.txt");
+                    return;
+                }
+
+                errorOccured = world.GetPlayer().HandleControlledAction();
 
                 isActionKeyPressed = false;
 
@@ -54,7 +61,7 @@ public class Controller extends KeyAdapter {
     public void keyPressed(KeyEvent event) {
         pressedCharacter = event.getKeyChar();
 
-        List<Character> available = Arrays.asList('a', 's', 'd', 'w', ' ');
+        List<Character> available = Arrays.asList('a', 's', 'd', 'w', ' ', '.', ',');
 
         if(available.contains(pressedCharacter)) {
             isActionKeyPressed = true;

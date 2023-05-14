@@ -49,7 +49,7 @@ public class Human extends Animal {
                 errorOccured = true;
             }
         }
-        else {
+        else if(pressedKey != 0) {
             boolean success = HandleMovement();
 		    errorOccured = !success;
         }
@@ -98,7 +98,7 @@ public class Human extends Animal {
 
         char pressedKey = controller.GetPressedCharacter();
 
-        Point2D moveTo = position;
+        Point2D moveTo = null;
 
         if (pressedKey == 'a') {
             moveTo = Utils.PointsSum(position, new Point2D.Double(-1, 0));
@@ -140,11 +140,20 @@ public class Human extends Animal {
         return "Human";
     }
 
+    public void SetStrengthBuff(int newStrengthBuff) {
+        strengthBuff = newStrengthBuff;
+    }
     public int GetStrengthBuff() {
         return strengthBuff;
     }
 
+    public void SetAbilityCooldown(int newCooldown) {
+        specialAbilityCooldown = newCooldown;
+    }
     public int GetAbilityCooldown() {
         return specialAbilityCooldown;
     }
+
+
+
 }

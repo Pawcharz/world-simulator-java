@@ -40,18 +40,7 @@ public class Displayer {
 
         logListSize = new Point2D.Double(400, 500);
 
-        int boardRangeX = (int) Math.abs(windowSize.getX() - logListSize.getX() - 2 * windowPadding.getX() - windowElementsGap);
-        int boardRangeY = (int) Math.abs(windowSize.getY() - 2 * windowPadding.getY());
-
         World world = World.GetInstance();
-        Point2D worldSize = world.GetInstance().GetDimensions();
-
-        // We choose higher pixels per cell ratio
-        cellSize = Math.floorDiv(boardRangeY, (int)worldSize.getY());
-        if(boardRangeY / worldSize.getY() >= boardRangeX / worldSize.getX()) {
-            cellSize = Math.floorDiv(boardRangeX, (int)worldSize.getX());
-        }
-        boardSize = new Point2D.Double(cellSize * worldSize.getX(), cellSize * worldSize.getY());
 
         window = new JFrame("Paweł Blicharz | s193193 | World Simulation");
         window.setSize((int) windowSize.getX(), (int) windowSize.getY());
@@ -77,9 +66,21 @@ public class Displayer {
 
 
     private void DrawBoard() {
-        cells = new ArrayList<>();
+        World world = World.GetInstance();
 
-        Point2D worldSize = World.GetInstance().GetDimensions();
+        int boardRangeX = (int) Math.abs(windowSize.getX() - logListSize.getX() - 2 * windowPadding.getX() - windowElementsGap);
+        int boardRangeY = (int) Math.abs(windowSize.getY() - 2 * windowPadding.getY());
+
+        Point2D worldSize = world.GetDimensions();
+
+        // We choose higher pixels per cell ratio
+        cellSize = Math.floorDiv(boardRangeY, (int)worldSize.getY());
+        if(boardRangeY / worldSize.getY() >= boardRangeX / worldSize.getX()) {
+            cellSize = Math.floorDiv(boardRangeX, (int)worldSize.getX());
+        }
+        boardSize = new Point2D.Double(cellSize * worldSize.getX(), cellSize * worldSize.getY());
+
+        cells = new ArrayList<>();
 
         for (int x = 0; x < worldSize.getX(); x++) {
             for (int y = (int) (worldSize.getY() - 1); y >= 0; y--) {
@@ -87,12 +88,11 @@ public class Displayer {
                 int posX = (int) (windowSize.getX() - boardSize.getX() - windowPadding.getX()) + x * cellSize;
                 int posY = (int) (windowPadding.getY()) + y * cellSize;
 
-                int finalX = x;
-                int finalY = y;
                 JPanel cell = new JPanel() {
                     @Override
                     public void paintComponent(Graphics g) {
                         super.paintComponent(g);
+//                        g.clearRect(0, 0, cellSize-1, cellSize-1);
                         g.drawRect(0, 0, cellSize - 1, cellSize - 1);
 
                         // FIX - images disappear after resizing
@@ -109,16 +109,32 @@ public class Displayer {
         }
     }
 
+    public void RedrawBoard() {
+        int clearX = (int) (windowPadding.getX() + logListSize.getX() + windowElementsGap);
+        int clearWidth = (int)(windowSize.getX() - 2 * windowPadding.getX());
+        int clearHeight = (int)(windowSize.getX() - windowPadding.getY() - clearX);
+        window.getGraphics().clearRect(clearX, (int) windowPadding.getY(), clearWidth, clearHeight);
+
+        for (int i = 0; i < cells.size(); i++) {
+            JPanel cell = cells.get(i);
+            window.remove(cell);
+        }
+        cells.clear();
+
+        DrawBoard();
+    }
+
     private void UpdateCell(int x, int y) {
         World world = World.GetInstance();
 
-        int cellIndex = x * (int)world.GetDimensions().getX() + y;
+        int cellIndex = x * (int)world.GetDimensions().getY() + y;
 
         Organism atPosition = world.GetOrganismAtPosition(new Point2D.Double(x, y));
 
         JPanel cell = cells.get(cellIndex);
-        Graphics cellGraphisc = cell.getGraphics();
-        cellGraphisc.clearRect(1, 1, cellSize-2, cellSize-2);
+        Graphics cellGraphics = cell.getGraphics();
+        cellGraphics.clearRect(1, 1, cellSize-2, cellSize-2);
+        cellGraphics.drawRect(0, 0, cellSize-1, cellSize-1);
         if(atPosition != null) {
             String iconPath = GetImagePathByOrganismType(atPosition.GetType());
             File file = new File(iconPath);
@@ -126,7 +142,7 @@ public class Displayer {
             {
                 BufferedImage image = ImageIO.read(file);
 
-                cellGraphisc.drawImage(image, 1, 1, cellSize-2, cellSize-2, null);
+                cellGraphics.drawImage(image, 1, 1, cellSize-2, cellSize-2, null);
             }
             catch (IOException e)
             {
@@ -161,7 +177,7 @@ public class Displayer {
             case WOLF: suffix = "/wolf.jpg"; break;
             case FOX: suffix = "/fox.png"; break;
             case TURTLE: suffix = "/turtle.png"; break;
-            case ANTILOPE: suffix = "/antelope.png"; break;
+            case ANTELOPE: suffix = "/antelope.png"; break;
 
             case GRASS: suffix = "/grass.png"; break;
             case SOW_THISTLE: suffix = "/sow_thistle.jpg"; break;

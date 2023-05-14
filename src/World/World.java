@@ -5,9 +5,7 @@ import Organisms.Organism;
 import Utils.ORGANISM_TYPE;
 
 import java.awt.geom.Point2D;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 import static Utils.Utils.ArePointsInDistance;
@@ -27,8 +25,11 @@ public class World
 
     private Human player;
 
+    boolean loadingFile;
+
     private World() {
         dimentions = new Point2D.Double(0, 0);
+        loadingFile = false;
 
         organisms = new ArrayList<Organism>();
         player = null;
@@ -127,9 +128,15 @@ public class World
 
         for (int i = 0; i < initialOrganismsCount; i++)
         {
-            Organism current = organisms.get(i);
+            if (loadingFile == true) {
+                loadingFile = false;
+                return;
+            }
 
-            current.Action();
+            Organism current = organisms.get(i);
+            if (current != null && current.IsAlive()) {
+                current.Action();
+            }
         }
 
         CleanDeadOrganisms();
@@ -196,7 +203,7 @@ public class World
         CreateSpecies(SHEEPS_COUNT, ORGANISM_TYPE.SHEEP);
         CreateSpecies(FOXES_COUNT, ORGANISM_TYPE.FOX);
         CreateSpecies(TURTLES_COUNT, ORGANISM_TYPE.TURTLE);
-        CreateSpecies(ANTELOPES_COUNT, ORGANISM_TYPE.ANTILOPE);
+        CreateSpecies(ANTELOPES_COUNT, ORGANISM_TYPE.ANTELOPE);
 
         CreateSpecies(GRASS_COUNT, ORGANISM_TYPE.GRASS);
         CreateSpecies(SOW_THISTLE_COUNT, ORGANISM_TYPE.SOW_THISTLE);
@@ -333,19 +340,15 @@ public class World
     }
     private String PrepareFileContentToSave() {
         String content = "";
-        content += organisms.size() + " ";
 
         content += (int)dimentions.getX() + " ";
-        content += (int)dimentions.getX() + " ";
+        content += (int)dimentions.getY() + " ";
 
-
-        int organismsSize = organisms.size();
-
-        for (int i = 0; i < organismsSize; i++)
+        for (int i = 0; i < organisms.size(); i++)
         {
             Organism current = organisms.get(i);
 
-            content += GetOrganismFileSaveContent(current) + " ";
+            content += GetOrganismFileSaveContent(current);
         }
 
         return content;
@@ -365,10 +368,10 @@ public class World
         }
 
         try {
-            FileWriter myWriter = new FileWriter(fileName);
+            FileWriter writer = new FileWriter(fileName);
             String content = PrepareFileContentToSave();
-            myWriter.write(content);
-            myWriter.close();
+            writer.write(content);
+            writer.close();
 
             System.out.println("Successfully wrote to the file.");
         } catch (IOException e) {
@@ -377,7 +380,85 @@ public class World
         }
     }
 
-//    void LoadFromFile();
+
+    int CreateOrganismFromBuffer(String[] tokens, int i) {
+
+        int strength = Integer.parseInt(tokens[i]);
+        int initiative = Integer.parseInt(tokens[i+1]);
+        int age = Integer.parseInt(tokens[i+2]);
+
+        int posX = Integer.parseInt(tokens[i+3]);
+        int posY = Integer.parseInt(tokens[i+4]);
+
+        ORGANISM_TYPE type = ORGANISM_TYPE.valueOf(tokens[i+5]);
+
+        boolean alive = true;
+        if(tokens[i+6] == "DEAD") {
+            alive = false;
+        }
+
+        if (type == ORGANISM_TYPE.HUMAN) {
+            int strengthBuff = Integer.parseInt(tokens[i+7]);
+            int cooldown = Integer.parseInt(tokens[i+8]);
+
+            Human human = new Human(new Point2D.Double(posX, posY));
+            human.SetAge(age);
+            human.SetAlive(alive);
+            human.SetStrengthBuff(strengthBuff);
+            human.SetAbilityCooldown(cooldown);
+
+            organisms.add(human);
+            player = human;
+            return i + 9;
+        }
+        else {
+
+            Organism organism = OrganismFactory.Create(type, new Point2D.Double(posX, posY));
+            organism.SetAge(age);
+            organism.SetAlive(alive);
+            organism.SetStrength(strength);
+            organism.SetInitiative(initiative);
+            organisms.add(organism);
+            return i + 7;
+        }
+    }
+    void ProcessLoadedFileContent(String content) {
+        String[] tokens = content.split(" ");
+        System.out.println(tokens);
+
+        int boardSizeX = Integer.parseInt(tokens[0]);
+        int boardSizeY = Integer.parseInt(tokens[1]);
+
+        organisms.clear();
+        player = null;
+        dimentions = new Point2D.Double(boardSizeX, boardSizeY);
+
+        for (int i = 2; i < tokens.length;) {
+            i = CreateOrganismFromBuffer(tokens, i);
+        }
+
+    }
+    void LoadFromFile(String fileName) {
+        int i;
+        FileReader reader = null;
+        try {
+            reader = new FileReader(fileName);
+
+            String content = "";
+
+            while ((i = reader.read()) != -1) {
+                content += (char)i;
+            }
+
+            ProcessLoadedFileContent(content);
+            loadingFile = true;
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        displayer.RedrawBoard();
+    }
 };
 
 

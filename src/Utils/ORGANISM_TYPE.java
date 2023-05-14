@@ -7,7 +7,7 @@ public enum ORGANISM_TYPE {
     WOLF,
     FOX,
     TURTLE,
-    ANTILOPE,
+    ANTELOPE,
     CYBER_SHEEP,
 
     GRASS,

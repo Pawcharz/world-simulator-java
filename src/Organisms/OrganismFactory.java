@@ -20,7 +20,7 @@ public class OrganismFactory {
                 return new Fox(_position);
             case TURTLE:
                 return new Turtle(_position);
-            case ANTILOPE:
+            case ANTELOPE:
                 return new Antelope(_position);
             case GRASS:
                 return new Grass(_position);

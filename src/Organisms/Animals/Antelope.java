@@ -15,7 +15,7 @@ public class Antelope extends Animal {
 
     public Antelope(Point2D _position) {
         super(_position, 4, 4);
-        type = ORGANISM_TYPE.ANTILOPE;
+        type = ORGANISM_TYPE.ANTELOPE;
     }
 
     @Override

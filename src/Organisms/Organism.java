@@ -4,6 +4,8 @@ import Utils.DEFENCE_RESULT;
 import Utils.ORGANISM_TYPE;
 
 import java.awt.geom.Point2D;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 
 public abstract class Organism
 {
@@ -63,7 +65,9 @@ public abstract class Organism
         return position;
     }
 
-
+    public void SetAlive(boolean newAlive) {
+        alive = newAlive;
+    }
     public void Die() {
         alive = false;
     }
