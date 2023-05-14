@@ -5,11 +5,13 @@ import Utils.ORGANISM_TYPE;
 import Utils.Utils;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -18,6 +20,8 @@ public class Displayer {
     private JFrame window;
     ArrayList<JPanel> cells;
     DefaultListModel<String> logsListModel;
+
+    JFrame addOrganismsPopup;
 
     private Point2D windowSize;
 
@@ -62,6 +66,31 @@ public class Displayer {
         logsList.setLocation((int) windowPadding.getX(), (int) windowPadding.getY());
 
         window.add(logsList);
+
+
+        DefaultListModel addOrganismListModel = new DefaultListModel<ORGANISM_TYPE>();
+        ORGANISM_TYPE[] types = ORGANISM_TYPE.values();
+        for (int i = 0; i < types.length; i++) {
+            addOrganismListModel.addElement(types[i]);
+        }
+
+
+        JList organismsList = new JList<String>(addOrganismListModel);
+        organismsList.setLayout(null);
+        int positionY = (int) (windowPadding.getY() + logListSize.getY() + windowElementsGap);
+        organismsList.setSize((int) logListSize.getX(), 200);
+
+        addOrganismsPopup = new JFrame("What organism should be added?");
+        addOrganismsPopup.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                world.GetController().SetMode(SIMULATION_MODE.SIMULATION_PLAYING);
+            }
+        });
+        addOrganismsPopup.setSize(600, 400);
+        addOrganismsPopup.setLayout(null);
+        addOrganismsPopup.add(organismsList);
+        addOrganismsPopup.setVisible(false);
     }
 
 
@@ -92,13 +121,13 @@ public class Displayer {
                     @Override
                     public void paintComponent(Graphics g) {
                         super.paintComponent(g);
-//                        g.clearRect(0, 0, cellSize-1, cellSize-1);
                         g.drawRect(0, 0, cellSize - 1, cellSize - 1);
 
                         // FIX - images disappear after resizing
                     }
-
                 };
+                cell.addMouseListener(world.GetController().GetCellClickAdapter(x, y));
+
                 cell.setLocation(posX, posY);
                 cell.setSize(cellSize, cellSize);
                 cell.setLayout(null);
@@ -195,8 +224,16 @@ public class Displayer {
         return Utils.GetPath(publicPart + suffix);
     }
     public void UpdateInterface() {
-        UpdateBoard();
-        UpdateLogsDisplay();
+
+        Controller controller = World.GetInstance().GetController();
+
+        if(controller.GetMode() == SIMULATION_MODE.SIMULATION_PLAYING) {
+            UpdateBoard();
+            UpdateLogsDisplay();
+        }
+        if(controller.GetMode() == SIMULATION_MODE.ADDING_ORGANISM) {
+            DisplayAddingMenu();
+        }
     }
 
     public void AddLog(String message) {
@@ -205,5 +242,9 @@ public class Displayer {
 
     public void ResetLogs() {
         logs.clear();
+    }
+
+    public void DisplayAddingMenu() {
+        addOrganismsPopup.setVisible(true);
     }
 }

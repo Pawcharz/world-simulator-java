@@ -4,5 +4,7 @@ public enum SIMULATION_MODE {
         FILE_SAVING,
         FILE_LOADING,
 
-        SIMULATION_PLAYING
+        SIMULATION_PLAYING,
+
+        ADDING_ORGANISM,
 }

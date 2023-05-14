@@ -26,10 +26,12 @@ public class World
     private Human player;
 
     boolean loadingFile;
+    boolean justLoaded;
 
     private World() {
         dimentions = new Point2D.Double(0, 0);
         loadingFile = false;
+        justLoaded = false;
 
         organisms = new ArrayList<Organism>();
         player = null;
@@ -134,8 +136,16 @@ public class World
             }
 
             Organism current = organisms.get(i);
-            if (current != null && current.IsAlive()) {
-                current.Action();
+            if(justLoaded) {
+                if(current.GetType() == ORGANISM_TYPE.HUMAN) {
+                    justLoaded = false;
+                    current.Action();
+                }
+            }
+            else {
+                if (current != null && current.IsAlive()) {
+                    current.Action();
+                }
             }
         }
 
@@ -197,19 +207,19 @@ public class World
 
 
 //        CreateSpecies(1, ORGANISM_TYPE.TURTLE);
-//        CreateSpecies(2, ORGANISM_TYPE.SHEEP);
+        CreateSpecies(1, ORGANISM_TYPE.SHEEP);
 
-        CreateSpecies(WOLFS_COUNT, ORGANISM_TYPE.WOLF);
-        CreateSpecies(SHEEPS_COUNT, ORGANISM_TYPE.SHEEP);
-        CreateSpecies(FOXES_COUNT, ORGANISM_TYPE.FOX);
-        CreateSpecies(TURTLES_COUNT, ORGANISM_TYPE.TURTLE);
-        CreateSpecies(ANTELOPES_COUNT, ORGANISM_TYPE.ANTELOPE);
-
-        CreateSpecies(GRASS_COUNT, ORGANISM_TYPE.GRASS);
-        CreateSpecies(SOW_THISTLE_COUNT, ORGANISM_TYPE.SOW_THISTLE);
-        CreateSpecies(GUARANA_COUNT, ORGANISM_TYPE.GUARANA);
-        CreateSpecies(BELLADONNA_COUNT, ORGANISM_TYPE.BELLADONNA);
-        CreateSpecies(SOSNOWSKYS_HOGWEED_COUNT, ORGANISM_TYPE.SOSNOWSKYS_HOGWEED);
+//        CreateSpecies(WOLFS_COUNT, ORGANISM_TYPE.WOLF);
+//        CreateSpecies(SHEEPS_COUNT, ORGANISM_TYPE.SHEEP);
+//        CreateSpecies(FOXES_COUNT, ORGANISM_TYPE.FOX);
+//        CreateSpecies(TURTLES_COUNT, ORGANISM_TYPE.TURTLE);
+//        CreateSpecies(ANTELOPES_COUNT, ORGANISM_TYPE.ANTELOPE);
+//
+//        CreateSpecies(GRASS_COUNT, ORGANISM_TYPE.GRASS);
+//        CreateSpecies(SOW_THISTLE_COUNT, ORGANISM_TYPE.SOW_THISTLE);
+//        CreateSpecies(GUARANA_COUNT, ORGANISM_TYPE.GUARANA);
+//        CreateSpecies(BELLADONNA_COUNT, ORGANISM_TYPE.BELLADONNA);
+//        CreateSpecies(SOSNOWSKYS_HOGWEED_COUNT, ORGANISM_TYPE.SOSNOWSKYS_HOGWEED);
 
         controller = new Controller();
         displayer = new Displayer();
@@ -219,8 +229,11 @@ public class World
         displayer.UpdateInterface();
 
         while (player != null) {
-            MakeTurn();
-            displayer.UpdateInterface();
+
+            if(controller.GetMode() == SIMULATION_MODE.SIMULATION_PLAYING) {
+                MakeTurn();
+            }
+//            displayer.UpdateInterface();
         }
 
         displayer.AddLog("Human got killed - GAME OVER");
@@ -452,11 +465,13 @@ public class World
 
             ProcessLoadedFileContent(content);
             loadingFile = true;
+            justLoaded = true;
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+        displayer.ResetLogs();
         displayer.RedrawBoard();
     }
 };

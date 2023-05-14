@@ -17,7 +17,7 @@ public class Human extends Animal {
     private int strengthBuff;
 
     public Human(Point2D _position) {
-        super(_position, 5, 4);
+        super(_position, 5, 5);
 
         baseStrength = 5;
         strengthBuff = 0;
@@ -61,6 +61,7 @@ public class Human extends Animal {
         World world = World.GetInstance();
         Controller controller = world.GetController();
 
+        world.GetDisplayer().UpdateInterface();
         controller.ProcessKeyboardInput();
 
         UpdateState();

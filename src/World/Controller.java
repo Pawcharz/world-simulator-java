@@ -1,7 +1,9 @@
 package World;
 
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import Organisms.Organism;
+
+import java.awt.event.*;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,22 +39,23 @@ public class Controller extends KeyAdapter {
             if (mode == SIMULATION_MODE.SIMULATION_PLAYING) {
 
                 if(pressedCharacter == '.') {
-                    pressedCharacter = 0;
+                    isActionKeyPressed = false;
                     world.SaveToFile("test.txt");
-                    return;
+//                    return;
                 }
-                if(pressedCharacter == ',') {
-                    pressedCharacter = 0;
+                else if(pressedCharacter == ',') {
+                    isActionKeyPressed = false;
                     world.LoadFromFile("test.txt");
                     return;
                 }
+                else {
+                    errorOccured = world.GetPlayer().HandleControlledAction();
 
-                errorOccured = world.GetPlayer().HandleControlledAction();
+                    isActionKeyPressed = false;
 
-                isActionKeyPressed = false;
-
-                if (!errorOccured) {
-                    return;
+                    if (!errorOccured) {
+                        return;
+                    }
                 }
             }
         }
@@ -83,5 +86,29 @@ public class Controller extends KeyAdapter {
 
     public String GetFileName() {
         return fileName;
+    }
+
+    public MouseListener GetCellClickAdapter(int cellX, int cellY) {
+        MouseListener mouseListener = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println("Mouse clicked cell at (" + cellX + ", " + cellY + ")");
+
+                mode = SIMULATION_MODE.ADDING_ORGANISM;
+                World world = World.GetInstance();
+
+                Organism existing = world.GetOrganismAtPosition(new Point2D.Double(cellX, cellY));
+
+                if (existing == null) {
+                    world.GetDisplayer().DisplayAddingMenu();
+                }
+            }
+        };
+
+        return mouseListener;
+    }
+
+    public void SetMode(SIMULATION_MODE newMode) {
+        mode = newMode;
     }
 };
