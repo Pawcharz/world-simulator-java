@@ -25,13 +25,8 @@ public class World
 
     private Human player;
 
-    boolean loadingFile;
-    boolean justLoaded;
-
     private World() {
         dimentions = new Point2D.Double(0, 0);
-        loadingFile = false;
-        justLoaded = false;
 
         organisms = new ArrayList<Organism>();
         player = null;
@@ -130,22 +125,14 @@ public class World
 
         for (int i = 0; i < initialOrganismsCount; i++)
         {
-            if (loadingFile == true) {
-                loadingFile = false;
+            // Detects mid-turn saving etc.
+            if(controller.GetMode() != SIMULATION_MODE.SIMULATION_PLAYING) {
                 return;
             }
 
             Organism current = organisms.get(i);
-            if(justLoaded) {
-                if(current.GetType() == ORGANISM_TYPE.HUMAN) {
-                    justLoaded = false;
-                    current.Action();
-                }
-            }
-            else {
-                if (current != null && current.IsAlive()) {
-                    current.Action();
-                }
+            if (current != null && current.IsAlive()) {
+                current.Action();
             }
         }
 
@@ -207,7 +194,7 @@ public class World
 
 
 //        CreateSpecies(1, ORGANISM_TYPE.TURTLE);
-        CreateSpecies(1, ORGANISM_TYPE.SHEEP);
+        CreateSpecies(2, ORGANISM_TYPE.SHEEP);
 
 //        CreateSpecies(WOLFS_COUNT, ORGANISM_TYPE.WOLF);
 //        CreateSpecies(SHEEPS_COUNT, ORGANISM_TYPE.SHEEP);
@@ -225,22 +212,30 @@ public class World
         displayer = new Displayer();
     }
 
-    public void Simulate() {
-        displayer.UpdateInterface();
+    public void Work() {
+        while (true) {
+            SIMULATION_MODE mode = controller.GetMode();
+            if (mode == SIMULATION_MODE.SIMULATION_PLAYING) {
 
-        while (player != null) {
+                if (player != null) {
+                    MakeTurn();
+                } else {
+                    displayer.AddLog("Human got killed - GAME OVER");
+                    displayer.UpdateInterface();
+                    return;
+                }
 
-            if(controller.GetMode() == SIMULATION_MODE.SIMULATION_PLAYING) {
-                MakeTurn();
+            } else if (mode == SIMULATION_MODE.FILE_SAVING) {
+                SaveToFile("test.txt");
+                controller.SetMode(SIMULATION_MODE.SIMULATION_PLAYING);
+            } else if (mode == SIMULATION_MODE.FILE_LOADING) {
+                LoadFromFile("test.txt");
+                controller.SetMode(SIMULATION_MODE.SIMULATION_PLAYING);
+            } else if (mode == SIMULATION_MODE.ADDING_ORGANISM) {
+                GetDisplayer().DisplayAddingMenu();
             }
-//            displayer.UpdateInterface();
         }
-
-        displayer.AddLog("Human got killed - GAME OVER");
-
-        displayer.UpdateInterface();
     }
-
 
     public ArrayList<Point2D> GetFieldsInRadius(Point2D position, int radius) {
         ArrayList<Point2D> fields = new ArrayList<Point2D>();
@@ -464,8 +459,6 @@ public class World
             }
 
             ProcessLoadedFileContent(content);
-            loadingFile = true;
-            justLoaded = true;
 
         } catch (IOException e) {
             throw new RuntimeException(e);

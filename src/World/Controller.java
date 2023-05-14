@@ -23,6 +23,8 @@ public class Controller extends KeyAdapter {
     }
 
     public void ProcessKeyboardInput() {
+        World world = World.GetInstance();
+
         while (true) {
             while(!isActionKeyPressed) {
                 try {
@@ -30,9 +32,12 @@ public class Controller extends KeyAdapter {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
+
+                if(world.GetController().GetMode() != SIMULATION_MODE.SIMULATION_PLAYING) {
+                    return;
+                }
             }
 
-            World world = World.GetInstance();
 
             boolean errorOccured = true;
 
@@ -40,12 +45,13 @@ public class Controller extends KeyAdapter {
 
                 if(pressedCharacter == '.') {
                     isActionKeyPressed = false;
-                    world.SaveToFile("test.txt");
-//                    return;
+                    mode = SIMULATION_MODE.FILE_SAVING;
+                    return;
                 }
                 else if(pressedCharacter == ',') {
                     isActionKeyPressed = false;
-                    world.LoadFromFile("test.txt");
+
+                    mode = SIMULATION_MODE.FILE_LOADING;
                     return;
                 }
                 else {
@@ -88,19 +94,18 @@ public class Controller extends KeyAdapter {
         return fileName;
     }
 
-    public MouseListener GetCellClickAdapter(int cellX, int cellY) {
+    public MouseListener GetCellClickAListener(int cellX, int cellY) {
         MouseListener mouseListener = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 System.out.println("Mouse clicked cell at (" + cellX + ", " + cellY + ")");
 
-                mode = SIMULATION_MODE.ADDING_ORGANISM;
                 World world = World.GetInstance();
 
                 Organism existing = world.GetOrganismAtPosition(new Point2D.Double(cellX, cellY));
 
                 if (existing == null) {
-                    world.GetDisplayer().DisplayAddingMenu();
+                    mode = SIMULATION_MODE.ADDING_ORGANISM;
                 }
             }
         };
@@ -110,5 +115,20 @@ public class Controller extends KeyAdapter {
 
     public void SetMode(SIMULATION_MODE newMode) {
         mode = newMode;
+    }
+
+    public ActionListener GetSaveButtonListener() {
+        ActionListener mouseListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                World world = World.GetInstance();
+
+                mode = SIMULATION_MODE.FILE_SAVING;
+//                world.SaveToFile("test.txt");
+            }
+        };
+
+        return mouseListener;
     }
 };

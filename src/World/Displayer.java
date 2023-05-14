@@ -6,6 +6,7 @@ import Utils.Utils;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -67,7 +68,7 @@ public class Displayer {
 
         window.add(logsList);
 
-
+        // Manual adding new organisms frame
         DefaultListModel addOrganismListModel = new DefaultListModel<ORGANISM_TYPE>();
         ORGANISM_TYPE[] types = ORGANISM_TYPE.values();
         for (int i = 0; i < types.length; i++) {
@@ -77,20 +78,37 @@ public class Displayer {
 
         JList organismsList = new JList<String>(addOrganismListModel);
         organismsList.setLayout(null);
-        int positionY = (int) (windowPadding.getY() + logListSize.getY() + windowElementsGap);
         organismsList.setSize((int) logListSize.getX(), 200);
 
         addOrganismsPopup = new JFrame("What organism should be added?");
         addOrganismsPopup.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+            public void windowClosing(WindowEvent windowEvent) {
                 world.GetController().SetMode(SIMULATION_MODE.SIMULATION_PLAYING);
+                addOrganismsPopup.setVisible(false);
             }
         });
         addOrganismsPopup.setSize(600, 400);
         addOrganismsPopup.setLayout(null);
         addOrganismsPopup.add(organismsList);
         addOrganismsPopup.setVisible(false);
+
+        // Saving/Loading buttons
+        int savePosY = (int) (windowPadding.getY() + logListSize.getY() + windowElementsGap);
+
+        JButton saveButton = new JButton("Save");
+        saveButton.setSize(100, 50);
+        saveButton.setLocation((int) windowPadding.getY(), savePosY);
+
+        JButton loadButton = new JButton("Load");
+        loadButton.setSize(100, 50);
+        loadButton.setLocation((int) windowPadding.getY() + windowElementsGap + 100, savePosY);
+
+        saveButton.addActionListener(world.GetController().GetSaveButtonListener());
+
+
+        window.add(saveButton);
+        window.add(loadButton);
     }
 
 
@@ -126,7 +144,7 @@ public class Displayer {
                         // FIX - images disappear after resizing
                     }
                 };
-                cell.addMouseListener(world.GetController().GetCellClickAdapter(x, y));
+                cell.addMouseListener(world.GetController().GetCellClickAListener(x, (int) (worldSize.getY() - 1 - y)));
 
                 cell.setLocation(posX, posY);
                 cell.setSize(cellSize, cellSize);

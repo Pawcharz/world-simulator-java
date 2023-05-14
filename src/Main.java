@@ -8,6 +8,6 @@ public class Main {
         World world = World.GetInstance();
         world.Initialize(new Point2D.Double(15, 10));
 
-        world.Simulate();
+        world.Work();
     }
 }
