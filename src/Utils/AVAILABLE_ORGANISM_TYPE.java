@@ -1,7 +1,6 @@
 package Utils;
 
-public enum ORGANISM_TYPE {
-    HUMAN,
+public enum AVAILABLE_ORGANISM_TYPE {
 
     SHEEP,
     WOLF,
@@ -15,7 +14,4 @@ public enum ORGANISM_TYPE {
     GUARANA,
     BELLADONNA,
     SOSNOWSKYS_HOGWEED,
-
-    UNKNOWN
 }
-

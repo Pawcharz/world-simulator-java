@@ -3,6 +3,7 @@ package World;
 import Organisms.Organism;
 import Utils.ORGANISM_TYPE;
 import Utils.Utils;
+import Utils.AVAILABLE_ORGANISM_TYPE;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -12,17 +13,18 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class Displayer {
 
     private JFrame window;
-    ArrayList<JPanel> cells;
-    DefaultListModel<String> logsListModel;
+    private ArrayList<JPanel> cells;
+    private DefaultListModel<String> logsListModel;
 
-    JFrame addOrganismsPopup;
+    private JFrame addOrganismsPopup;
+    private JList addOrganismList;
+    private DefaultListModel<String> addOrganismListModel;
 
     private Point2D windowSize;
 
@@ -69,43 +71,50 @@ public class Displayer {
         window.add(logsList);
 
         // Manual adding new organisms frame
-        DefaultListModel addOrganismListModel = new DefaultListModel<ORGANISM_TYPE>();
-        ORGANISM_TYPE[] types = ORGANISM_TYPE.values();
+        addOrganismListModel = new DefaultListModel<String>();
+        AVAILABLE_ORGANISM_TYPE[] types = AVAILABLE_ORGANISM_TYPE.values();
         for (int i = 0; i < types.length; i++) {
-            addOrganismListModel.addElement(types[i]);
+            addOrganismListModel.addElement(String.valueOf(types[i]));
         }
 
 
-        JList organismsList = new JList<String>(addOrganismListModel);
-        organismsList.setLayout(null);
-        organismsList.setSize((int) logListSize.getX(), 200);
+        addOrganismList = new JList<String>(addOrganismListModel);
+        addOrganismList.setLayout(null);
+        addOrganismList.setSize((int) logListSize.getX(), 300);
+        addOrganismList.setLocation((int) windowPadding.getX(), (int) windowPadding.getY());
+
+        JButton addOrganismButton = new JButton("Add Organism");
+        addOrganismButton.setSize(150, 50);
+        addOrganismButton.setLocation((int) windowPadding.getX(), (int) (300 + windowElementsGap + windowPadding.getY()));
+        addOrganismButton.addActionListener(world.GetController().GetAddOrganismListener());
+        addOrganismButton.setFocusable(false);
 
         addOrganismsPopup = new JFrame("What organism should be added?");
-        addOrganismsPopup.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent windowEvent) {
-                world.GetController().SetMode(SIMULATION_MODE.SIMULATION_PLAYING);
-                addOrganismsPopup.setVisible(false);
-            }
-        });
-        addOrganismsPopup.setSize(600, 400);
+        addOrganismsPopup.addWindowListener(world.GetController().GetCloseAddOrganismWindowListener());
+        addOrganismsPopup.addWindowListener(world.GetController().GetCloseAddOrganismWindowListener());
+        addOrganismsPopup.setSize(600, 600);
         addOrganismsPopup.setLayout(null);
-        addOrganismsPopup.add(organismsList);
-        addOrganismsPopup.setVisible(false);
+        addOrganismsPopup.add(addOrganismList);
+        addOrganismsPopup.add(addOrganismButton);
+        SetAddOrganismPopupVisibility(false);
 
         // Saving/Loading buttons
         int savePosY = (int) (windowPadding.getY() + logListSize.getY() + windowElementsGap);
 
         JButton saveButton = new JButton("Save");
         saveButton.setSize(100, 50);
-        saveButton.setLocation((int) windowPadding.getY(), savePosY);
+        saveButton.setLocation((int) windowPadding.getX(), savePosY);
+
+        saveButton.addActionListener(world.GetController().GetSaveButtonListener());
+        saveButton.setFocusable(false);
+
 
         JButton loadButton = new JButton("Load");
         loadButton.setSize(100, 50);
-        loadButton.setLocation((int) windowPadding.getY() + windowElementsGap + 100, savePosY);
+        loadButton.setLocation((int) windowPadding.getX() + windowElementsGap + 100, savePosY);
 
-        saveButton.addActionListener(world.GetController().GetSaveButtonListener());
-
+        loadButton.addActionListener(world.GetController().GetLoadButtonListener());
+        loadButton.setFocusable(false);
 
         window.add(saveButton);
         window.add(loadButton);
@@ -144,7 +153,7 @@ public class Displayer {
                         // FIX - images disappear after resizing
                     }
                 };
-                cell.addMouseListener(world.GetController().GetCellClickAListener(x, (int) (worldSize.getY() - 1 - y)));
+                cell.addMouseListener(world.GetController().GetCellClickListener(x, (int) (worldSize.getY() - 1 - y)));
 
                 cell.setLocation(posX, posY);
                 cell.setSize(cellSize, cellSize);
@@ -250,7 +259,7 @@ public class Displayer {
             UpdateLogsDisplay();
         }
         if(controller.GetMode() == SIMULATION_MODE.ADDING_ORGANISM) {
-            DisplayAddingMenu();
+            SetAddOrganismPopupVisibility(true);
         }
     }
 
@@ -262,7 +271,19 @@ public class Displayer {
         logs.clear();
     }
 
-    public void DisplayAddingMenu() {
-        addOrganismsPopup.setVisible(true);
+    public ORGANISM_TYPE GetSelectedOrganism() {
+        int index =  addOrganismList.getSelectedIndex();
+        if(index == -1) {
+            return null;
+        }
+
+        String typeStr = addOrganismListModel.get(index);
+        ORGANISM_TYPE type = ORGANISM_TYPE.valueOf(typeStr);
+
+        return type;
+    }
+    
+    public void SetAddOrganismPopupVisibility(boolean visible) {
+        addOrganismsPopup.setVisible(visible);
     }
 }

@@ -32,7 +32,12 @@ public class World
         player = null;
     }
 
-    private void CreateOrganism(ORGANISM_TYPE organismType) {
+    public void CreateOrganism(ORGANISM_TYPE organismType, Point2D position) {
+        Organism organism = OrganismFactory.Create(organismType, position);
+        organisms.add(organism);
+    }
+
+    private void CreateOrganismAtRandomPosition(ORGANISM_TYPE organismType) {
 
         Point2D position = RandomPoint2D(new Point2D.Double(0, 0), dimentions);
 
@@ -43,15 +48,16 @@ public class World
             position = RandomPoint2D(new Point2D.Double(0, 0), dimentions);
             existing = GetOrganismAtPosition(position);
         }
+        CreateOrganism(organismType, position);
 
-        Organism organism = OrganismFactory.Create(organismType, position);
-        organisms.add(organism);
+//        Organism organism = OrganismFactory.Create(organismType, position);
+//        organisms.add(organism);
     }
 
     private void CreateSpecies(int entities, ORGANISM_TYPE organismType) {
         for (int i = 0; i < entities; i++)
         {
-            CreateOrganism(organismType);
+            CreateOrganismAtRandomPosition(organismType);
         }
     }
 
@@ -232,7 +238,7 @@ public class World
                 LoadFromFile("test.txt");
                 controller.SetMode(SIMULATION_MODE.SIMULATION_PLAYING);
             } else if (mode == SIMULATION_MODE.ADDING_ORGANISM) {
-                GetDisplayer().DisplayAddingMenu();
+                GetDisplayer().SetAddOrganismPopupVisibility(true);
             }
         }
     }

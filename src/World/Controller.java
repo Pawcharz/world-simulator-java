@@ -1,7 +1,10 @@
 package World;
 
 import Organisms.Organism;
+import Utils.AVAILABLE_ORGANISM_TYPE;
+import Utils.ORGANISM_TYPE;
 
+import javax.swing.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -14,12 +17,14 @@ public class Controller extends KeyAdapter {
 
     private SIMULATION_MODE mode;
 
-    private String fileName;
+    private boolean isActionKeyPressed;
 
-    private boolean isActionKeyPressed = false;
+    private Point2D addOrganismPosition;
 
     Controller() {
         mode = SIMULATION_MODE.SIMULATION_PLAYING;
+        addOrganismPosition = null;
+        isActionKeyPressed = false;
     }
 
     public void ProcessKeyboardInput() {
@@ -43,25 +48,12 @@ public class Controller extends KeyAdapter {
 
             if (mode == SIMULATION_MODE.SIMULATION_PLAYING) {
 
-                if(pressedCharacter == '.') {
-                    isActionKeyPressed = false;
-                    mode = SIMULATION_MODE.FILE_SAVING;
+                errorOccured = world.GetPlayer().HandleControlledAction();
+
+                isActionKeyPressed = false;
+
+                if (!errorOccured) {
                     return;
-                }
-                else if(pressedCharacter == ',') {
-                    isActionKeyPressed = false;
-
-                    mode = SIMULATION_MODE.FILE_LOADING;
-                    return;
-                }
-                else {
-                    errorOccured = world.GetPlayer().HandleControlledAction();
-
-                    isActionKeyPressed = false;
-
-                    if (!errorOccured) {
-                        return;
-                    }
                 }
             }
         }
@@ -70,7 +62,7 @@ public class Controller extends KeyAdapter {
     public void keyPressed(KeyEvent event) {
         pressedCharacter = event.getKeyChar();
 
-        List<Character> available = Arrays.asList('a', 's', 'd', 'w', ' ', '.', ',');
+        List<Character> available = Arrays.asList('a', 's', 'd', 'w', ' ');
 
         if(available.contains(pressedCharacter)) {
             isActionKeyPressed = true;
@@ -90,14 +82,14 @@ public class Controller extends KeyAdapter {
         return mode;
     }
 
-    public String GetFileName() {
-        return fileName;
-    }
-
-    public MouseListener GetCellClickAListener(int cellX, int cellY) {
+    public MouseListener GetCellClickListener(int cellX, int cellY) {
         MouseListener mouseListener = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                if(addOrganismPosition != null) {
+                    return;
+                }
+
                 System.out.println("Mouse clicked cell at (" + cellX + ", " + cellY + ")");
 
                 World world = World.GetInstance();
@@ -105,7 +97,11 @@ public class Controller extends KeyAdapter {
                 Organism existing = world.GetOrganismAtPosition(new Point2D.Double(cellX, cellY));
 
                 if (existing == null) {
+                    addOrganismPosition = new Point2D.Double(cellX, cellY);
                     mode = SIMULATION_MODE.ADDING_ORGANISM;
+                }
+                else {
+                    addOrganismPosition = null;
                 }
             }
         };
@@ -113,22 +109,64 @@ public class Controller extends KeyAdapter {
         return mouseListener;
     }
 
+    private void CloseAddOrganismWindow() {
+        World world = World.GetInstance();
+        addOrganismPosition = null;
+        world.GetController().SetMode(SIMULATION_MODE.SIMULATION_PLAYING);
+        world.GetDisplayer().SetAddOrganismPopupVisibility(false);
+    }
+    public WindowAdapter GetCloseAddOrganismWindowListener() {
+        return new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                CloseAddOrganismWindow();
+            }
+        };
+    }
+
     public void SetMode(SIMULATION_MODE newMode) {
         mode = newMode;
     }
 
     public ActionListener GetSaveButtonListener() {
-        ActionListener mouseListener = new ActionListener() {
+        ActionListener listener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                World world = World.GetInstance();
-
                 mode = SIMULATION_MODE.FILE_SAVING;
-//                world.SaveToFile("test.txt");
             }
         };
 
-        return mouseListener;
+        return listener;
+    }
+
+    public ActionListener GetLoadButtonListener() {
+        ActionListener listener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mode = SIMULATION_MODE.FILE_LOADING;
+            }
+        };
+
+        return listener;
+    }
+
+    public ActionListener GetAddOrganismListener() {
+        ActionListener listener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                World world = World.GetInstance();
+                ORGANISM_TYPE type = world.GetDisplayer().GetSelectedOrganism();
+                System.out.println(type);
+
+                if(type == null) {
+                    return;
+                }
+
+                world.CreateOrganism(type, addOrganismPosition);
+                CloseAddOrganismWindow();
+            }
+        };
+
+        return listener;
     }
 };
